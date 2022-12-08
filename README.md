@@ -1,1 +1,1 @@
-# only-typescript
+# Kata Testing Library
