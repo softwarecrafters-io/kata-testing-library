@@ -14,16 +14,28 @@ export function describe (context:string, callback:()=>void){
 
 export function test(description:string, callback:()=> void | Promise<void>){
     try{
-        callback();
-        console.log(`✅ ${description}`);
-
-        (callback() as Promise<void>)?.then(()=> console.log(`✅ ${description}`))
-                .catch(error => console.log(`❌ ${description} ${error}`))
-            ?? console.log(`✅ ${description}`);
+        isPromise(callback())
+            ? evaluatePromise(description, callback as ()=> Promise<void>)
+            : evaluate(description, callback);
     }
     catch (error){
         console.log(`❌ ${description} ${error}`);
     }
+}
+
+function evaluate(description:string, callback:()=>void){
+    callback();
+    console.log(`✅ ${description}`);
+}
+
+function evaluatePromise(description:string, callback:()=>Promise<void>){
+    (callback())
+        .then(()=> console.log(`✅ ${description}`))
+        .catch(error => console.log(`❌ ${description} ${error}`))
+}
+
+function isPromise(promise) {
+    return !!promise && typeof promise.then === 'function'
 }
 
 export const it = test;
